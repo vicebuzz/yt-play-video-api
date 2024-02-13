@@ -1,47 +1,34 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
+<!-- App.vue -->
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <div id="app">
+    <VideoInput />
+    <PlayerComponent :videoUrl="videoUrl" />
+    <QueueComponent />
+  </div>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script>
+import PlayerComponent from "@/components/PlayerComponent.vue";
+import QueueComponent from "@/components/QueueComponent.vue";
+import VideoInput from "@/components/VideoInput.vue";
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+export default {
+  name:'App',
+  components:{
+    PlayerComponent,
+    VideoInput,
+    QueueComponent,
+  },
+  computed:{
+    videoUrl() {
+      return `https://www.youtube.com/embed/X2dBUVzJUts`;
+    }
   }
+};
+</script>
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+<style>
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
 </style>
