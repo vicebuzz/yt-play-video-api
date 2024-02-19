@@ -1,13 +1,52 @@
-<script setup>
-
-</script>
-
 <template>
   <div class="input-container">
-    <input type="text" id="urlInput" placeholder="Enter url:">
-    <button class="input-btn">+</button>
+    <input type="text" v-model="videoUrl" placeholder="Enter URL">
+    <button class="input-btn" @click="fetchVideoURL">+</button>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      videoUrl: '',
+      videoId: ''
+    };
+  },
+  methods: {
+    fetchVideoURL(){
+      if (this.videoUrl.trim() !== '') {
+        console.log('here')
+        this.videoId = this.extractVideoId(this.videoUrl);
+        if (this.videoId) {
+          this.fetchVideoTitle(this.videoUrl);
+        } else {
+          console.error('Invalid YouTube URL');
+        }
+      } else {
+        console.error('Invalid YouTube URL');
+      }
+      this.videoUrl = ''
+    },
+    extractVideoId(url){
+      const match = url.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);
+      return match ? match[1] : null;
+    },
+    fetchVideoTitle(videoUrl){
+      fetch(`https://noembed.com/embed?url=${encodeURIComponent(videoUrl)}`)
+          .then(response => response.json())
+          .then(data => {
+            const title = data["title"];
+            console.log(title)
+            this.$emit('add-to-queue', title);
+          })
+          .catch(error => {
+            console.error('Error fetching video title:', error);
+          });
+    }
+  }
+};
+</script>
 
 <style scoped>
 .input-container {
