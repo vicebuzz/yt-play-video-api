@@ -1,11 +1,3 @@
-<script>
-export default {
-  props: {
-    videoUrl: "https://www.youtube.com/embed/X2dBUVzJUts",
-  }
-}
-</script>
-
 <template>
   <div class="player-container">
     <iframe id="player"
@@ -13,11 +5,32 @@ export default {
             width=100%,
             height=100%
     ></iframe>
+    <youtube></youtube>
     <div class="control-buttons">
 
     </div>
   </div>
 </template>
+
+<script>
+import VueYouTubeEmbed from 'vue-youtube-embed'
+
+
+
+export default {
+  props: {
+    videoUrl: "https://www.youtube.com/embed/X2dBUVzJUts",
+  },
+  methods: {
+    getNext(){
+
+    }
+  },
+  components: {
+    VueYouTubeEmbed
+  }
+}
+</script>
 
 <style scoped>
 .player-container{

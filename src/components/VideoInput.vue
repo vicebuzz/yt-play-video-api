@@ -38,7 +38,7 @@ export default {
           .then(data => {
             const title = data["title"];
             console.log(title)
-            this.$emit('add-to-queue', title);
+            this.$emit('add-to-queue', title, `https://www.youtube.com/embed/` + this.extractVideoId(videoUrl));
           })
           .catch(error => {
             console.error('Error fetching video title:', error);

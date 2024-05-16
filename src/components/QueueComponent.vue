@@ -1,12 +1,15 @@
 <template>
   <div class="queue-container">
     <div class="queue" :style="{ width: dynamicWidth }">
-      <draggable :list="videos" @update="handleUpdate" tag="div" class="videoList" :style="{ width: dynamicWidth }">
+      <draggable :list="videos" tag="div" class="videoList" :style="{ width: dynamicWidth }">
         <template #item="{ element: video, index }">
-          <li class="video" :key="index">
+          <li class="video" :key="index" @dblclick="playVideo(video.url)" :class="{ 'current-video': video.isCurrent === true, 'non-current-video': video.isCurrent === false }" :data-video-url="video.url">
             <span class="number">{{ index + 1 }}</span>
             <span class="title">{{ video.title }}</span>
             <span class="length">{{ video.length }}</span>
+            <div class="popup-menu">
+              <button class="popup-menu-item-delete" @click="deleteVideo(video.url)"><font-awesome-icon icon="fa-solid fa-trash" /></button>
+            </div>
           </li>
         </template>
       </draggable>
@@ -16,13 +19,15 @@
 
 <script>
 import draggable from "vuedraggable";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { fas } from '@fortawesome/free-solid-svg-icons'
 
 export default {
   props: {
     videos: {
       type: Array,
       required: true,
-    },
+    }
   },
   data() {
     return {
@@ -41,11 +46,15 @@ export default {
       const maxTitleWidth = document.querySelector(".title").offsetWidth;
       this.dynamicWidth = `calc(${maxTitleWidth}px + 40px)`;
     },
-    handleUpdate(newList) {
-      this.$emit("update:videos", newList); // Emitting event to update videos in parent component
+    playVideo(videoUrl) {
+      this.$emit("change-video-url", videoUrl);
     },
+    deleteVideo(videoUrl){
+      this.$emit("delete-video-url", videoUrl)
+    }
   },
   components: {
+    FontAwesomeIcon,
     draggable,
   },
 };
@@ -81,15 +90,15 @@ export default {
   padding: 10px;
   display: flex;
   align-items: center;
-  cursor: pointer;
-}
-
-.current {
-  background-color: orange;
-}
-
-.videoList div{
   cursor: move;
+}
+
+.non-current-video {
+  background-color: lightgoldenrodyellow;
+}
+
+.current-video {
+  background-color: orange;
 }
 
 .number {
@@ -106,8 +115,25 @@ export default {
   font-style: italic;
 }
 
-.videoList div:hover {
+.videoList li:hover {
   transition: all 0.3s ease-in-out;
   transform: scale(1.05);
+}
+
+.video:hover .popup-menu {
+  display: flex;
+}
+
+.popup-menu {
+  display: none;
+  padding: 5px;
+}
+
+.popup-menu-item-play{
+  cursor: pointer;
+}
+
+.popup-menu-item-delete{
+  cursor: pointer;
 }
 </style>
