@@ -19,17 +19,46 @@ import VueYouTubeEmbed from 'vue-youtube-embed'
 
 export default {
   props: {
-    videoUrl: "https://www.youtube.com/embed/X2dBUVzJUts",
-  },
-  methods: {
-    getNext(){
-
+    videoUrl: {
+      type: String,
+      required: true
     }
   },
-  components: {
-    VueYouTubeEmbed
+  computed: {
+    computedVideoUrl() {
+      return `${this.videoUrl}?enablejsapi=1`;
+    }
+  },
+  mounted() {
+    this.initializeYouTubePlayer();
+  },
+  methods: {
+    initializeYouTubePlayer() {
+      window.onYouTubeIframeAPIReady = () => {
+        this.player = new YT.Player('player', {
+          events: {
+            'onStateChange': this.onPlayerStateChange
+          }
+        });
+      };
+
+      // Load the YouTube IFrame API script
+      if (!window.YT) {
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      } else {
+        window.onYouTubeIframeAPIReady();
+      }
+    },
+    onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.ENDED) {
+        this.$emit('video-ended');
+      }
+    }
   }
-}
+};
 </script>
 
 <style scoped>

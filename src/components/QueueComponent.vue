@@ -7,9 +7,13 @@
             <span class="number">{{ index + 1 }}</span>
             <span class="title">{{ video.title }}</span>
             <span class="length">{{ video.length }}</span>
-            <div class="popup-menu">
-              <button class="popup-menu-item-delete" @click="deleteVideo(video.url)"><font-awesome-icon icon="fa-solid fa-trash" /></button>
-            </div>
+            <button
+                class="item-delete-btn"
+                @click="deleteVideo(video.url)"
+                :class="{ 'current-delete-btn': video.isCurrent, 'non-current-delete-btn': !video.isCurrent }"
+            >
+              <font-awesome-icon :icon="['fas', 'trash']" />
+            </button>
           </li>
         </template>
       </draggable>
@@ -20,7 +24,6 @@
 <script>
 import draggable from "vuedraggable";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { fas } from '@fortawesome/free-solid-svg-icons'
 
 export default {
   props: {
@@ -50,6 +53,7 @@ export default {
       this.$emit("change-video-url", videoUrl);
     },
     deleteVideo(videoUrl){
+      console.log('Emitting delete-video-url for:', videoUrl);
       this.$emit("delete-video-url", videoUrl)
     }
   },
@@ -120,20 +124,27 @@ export default {
   transform: scale(1.05);
 }
 
-.video:hover .popup-menu {
+.video:hover {
   display: flex;
 }
 
-.popup-menu {
-  display: none;
-  padding: 5px;
+.video .length {
+  padding-right: 15px;
 }
 
-.popup-menu-item-play{
+.item-delete-btn {
+  border: none;
   cursor: pointer;
+  background-color: transparent;
 }
 
-.popup-menu-item-delete{
-  cursor: pointer;
+.item-delete-btn:hover.current-delete-btn {
+  color: orange;
+  background-color: black;
+}
+
+.item-delete-btn:hover.non-current-delete-btn {
+  color: lightgoldenrodyellow;
+  background-color: black;
 }
 </style>
