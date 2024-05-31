@@ -16,7 +16,6 @@ export default {
   methods: {
     fetchVideoURL(){
       if (this.videoUrl.trim() !== '') {
-        console.log('here')
         this.videoId = this.extractVideoId(this.videoUrl);
         if (this.videoId) {
           this.fetchVideoTitle(this.videoUrl);
@@ -32,17 +31,40 @@ export default {
       const match = url.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);
       return match ? match[1] : null;
     },
-    fetchVideoTitle(videoUrl){
+    async fetchVideoTitle(videoUrl){
+      let title = ''
       fetch(`https://noembed.com/embed?url=${encodeURIComponent(videoUrl)}`)
           .then(response => response.json())
           .then(data => {
-            const title = data["title"];
-            console.log(title)
-            this.$emit('add-to-queue', title, `https://www.youtube.com/embed/` + this.extractVideoId(videoUrl));
+            console.log(data)
+            title = data["title"];
           })
           .catch(error => {
             console.error('Error fetching video title:', error);
           });
+      const videoDuration = await this.fetchVideoDuration(this.videoUrl);
+      this.$emit('add-to-queue', title, `https://www.youtube.com/embed/` + this.extractVideoId(videoUrl), videoDuration);
+    },
+    async fetchVideoDuration(url) {
+      const videoId = this.extractVideoId(url);
+      const apiKey = 'AIzaSyC0S402IMSA4vkYRIrL02UXthPYSXrxpNs'; // Replace with your YouTube Data API key
+      const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails&key=${apiKey}`;
+
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      if (data.items && data.items.length > 0) {
+        const duration = data.items[0].contentDetails.duration;
+        return this.convertISO8601ToDuration(duration);
+      } else {
+        throw new Error('Video not found');
+      }
+    },
+    convertISO8601ToDuration(isoDuration) {
+      const match = isoDuration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+      const hours = (parseInt(match[1], 10) || 0);
+      const minutes = (parseInt(match[2], 10) || 0);
+      const seconds = (parseInt(match[3], 10) || 0);
+      return `${hours ? hours + ':' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }
   }
 };

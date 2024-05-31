@@ -37,9 +37,9 @@ export default {
     },
   },
   methods: {
-    handleVideoAdded(videoTitle, videoUrl) {
+    handleVideoAdded(videoTitle, videoUrl, videoLength) {
       console.log("Video title added:", videoTitle);
-      this.videos.push({ title: videoTitle, length: "4:30", url:videoUrl, isCurrent: false });
+      this.videos.push({ title: videoTitle, length: videoLength, url:videoUrl, isCurrent: false });
       if (this.videos.length === 1){
         this.videos[0].isCurrent = true;
       }

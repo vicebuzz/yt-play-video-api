@@ -53,6 +53,7 @@ export default {
     },
     onPlayerStateChange(event) {
       if (event.data === YT.PlayerState.ENDED) {
+        console.log("ended")
         this.$emit('video-ended');
       }
     },
