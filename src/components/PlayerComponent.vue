@@ -20,6 +20,16 @@ export default {
       required: true
     }
   },
+  watch: {
+    videoUrl(newVal) {
+      if (document.getElementById('iframe_api') != null) {
+        const videoId = this.extractVideoId(newVal);
+        this.player.loadVideoById(videoId);
+      } else {
+        this.loadYouTubeAPI();
+      }
+    }
+  },
   computed: {
     computedVideoUrl() {
       return `${this.videoUrl}?enablejsapi=1`;  // Add enablejsapi parameter to use YouTube IFrame API
@@ -58,7 +68,16 @@ export default {
       }
     },
     onPlayerReady(event){
-      event.target.playVideo();
+      event.target.loadVideoById(this.extractVideoId(this.videoUrl), 0, 'large');
+    },
+    extractVideoId(url){
+      const match = url.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);
+      return match ? match[1] : null;
+    }
+  },
+  beforeDestroy() {
+    if (this.player) {
+      this.player.destroy();
     }
   }
 };
