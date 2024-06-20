@@ -85,6 +85,7 @@ export default {
   font-size: 1.5rem;
   border: none;
   background: white;
+  color: black;
 }
 
 .input-container button {
@@ -98,7 +99,7 @@ export default {
 }
 
 .input-container button:hover {
-  background: #000000;
+  background: transparent;
   color: #ffffff;
 }
 </style>

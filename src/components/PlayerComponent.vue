@@ -18,6 +18,10 @@ export default {
     videoUrl: {
       type: String,
       required: true
+    },
+    repeatFlag: {
+      type: Boolean,
+      required:true
     }
   },
   watch: {
@@ -40,14 +44,14 @@ export default {
   },
   methods: {
     loadYouTubeAPI() {
-      // Ensure the YouTube IFrame API is only loaded once
+      // ensure the YouTube IFrame API is only loaded once
       if (!window.YT) {
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        // Set up a callback to initialize the player when the API is ready
+        // set up a callback to initialize the player when the API is ready
         window.onYouTubeIframeAPIReady = this.initializeYouTubePlayer;
       } else if (window.YT && window.YT.Player) {
         this.initializeYouTubePlayer();
@@ -64,7 +68,11 @@ export default {
     onPlayerStateChange(event) {
       if (event.data === YT.PlayerState.ENDED) {
         console.log("ended")
-        this.$emit('video-ended');
+        if (this.repeatFlag){
+          event.target.loadVideoById(this.extractVideoId(this.videoUrl), 0, 'large');
+        } else{
+          this.$emit('video-ended');
+        }
       }
     },
     onPlayerReady(event){

@@ -1,15 +1,53 @@
 <template>
   <div class="queue-container">
     <div class="queue" :style="{ width: dynamicWidth }">
+      <div class="controls-container">
+        <button
+            class="random-shuffle-btn"
+            @click="randomiseSongs"
+        >
+          <font-awesome-icon :icon="['fa','fa-random']"/>
+        </button>
+        <button
+            class="repeat-song-btn"
+            @click="repeatSwitch"
+        >
+          <font-awesome-icon :icon="['fa','fa-exchange']"/>
+        </button>
+        <button
+            @click="playLast"
+        >
+          <font-awesome-icon :icon="['fa','fa-step-backward']"/>
+        </button>
+        <button
+            @click="playNext"
+        >
+          <font-awesome-icon :icon="['fa','fa-step-forward']"/>
+        </button>
+      </div>
       <draggable :list="videos" tag="div" class="videoList" :style="{ width: dynamicWidth }">
         <template #item="{ element: video, index }">
-          <li class="video" :key="index" @dblclick="playVideo(video.url)" :class="{ 'current-video': video.isCurrent === true, 'non-current-video': video.isCurrent === false }" :data-video-url="video.url">
+          <li class="video" :key="index" @dblclick="playVideo(index)" :class="{ 'current-video': video.isCurrent === true, 'non-current-video': video.isCurrent === false }" :data-video-url="video.url">
             <span class="number">{{ index + 1 }}</span>
             <span class="title">{{ video.title }}</span>
             <span class="length">{{ video.length }}</span>
             <button
+                class="item-arrow-up"
+                @click="moveVideoUp(index)"
+                :class="{ 'current-arrow-up-btn': video.isCurrent, 'non-current-arrow-up-btn': !video.isCurrent }"
+            >
+              <font-awesome-icon :icon="['fa','long-arrow-up']"/>
+            </button>
+            <button
+                class="item-arrow-down"
+                @click="moveVideoDown(index)"
+                :class="{ 'current-arrow-down-btn': video.isCurrent, 'non-current-arrow-down-btn': !video.isCurrent }"
+            >
+              <font-awesome-icon :icon="['fa','long-arrow-down']"/>
+            </button>
+            <button
                 class="item-delete-btn"
-                @click="deleteVideo(video.url)"
+                @click="deleteVideo(index)"
                 :class="{ 'current-delete-btn': video.isCurrent, 'non-current-delete-btn': !video.isCurrent }"
             >
               <font-awesome-icon :icon="['fas', 'trash']" />
@@ -49,12 +87,30 @@ export default {
       const maxTitleWidth = document.querySelector(".title").offsetWidth;
       this.dynamicWidth = `calc(${maxTitleWidth}px + 40px)`;
     },
-    playVideo(videoUrl) {
-      this.$emit("change-video-url", videoUrl);
+    playVideo(videoIndex) {
+      this.$emit("change-video-url", videoIndex);
     },
-    deleteVideo(videoUrl){
-      console.log('Emitting delete-video-url for:', videoUrl);
-      this.$emit("delete-video-url", videoUrl)
+    deleteVideo(videoIndex){
+      //console.log('Emitting delete-video-url for:', videoIndex);
+      this.$emit("delete-video-url", videoIndex)
+    },
+    moveVideoUp(videoUrl){
+      this.$emit("move-video-up", videoUrl)
+    },
+    moveVideoDown(videoUrl){
+      this.$emit("move-video-down", videoUrl)
+    },
+    randomiseSongs(){
+      this.$emit("randomise-songs")
+    },
+    repeatSwitch(){
+      this.$emit("repeat-switch")
+    },
+    playNext(){
+      this.$emit("play-next")
+    },
+    playLast(){
+      this.$emit("play-last")
     }
   },
   components: {
@@ -146,5 +202,56 @@ export default {
 .item-delete-btn:hover.non-current-delete-btn {
   color: lightgoldenrodyellow;
   background-color: black;
+}
+
+.item-arrow-down {
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.item-arrow-down:hover.current-arrow-down-btn {
+  color: orange;
+  background-color: black;
+}
+
+.item-arrow-down:hover.non-current-arrow-down-btn {
+  color: lightgoldenrodyellow;
+  background-color: black;
+}
+
+.item-arrow-up {
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.item-arrow-up:hover.current-arrow-up-btn {
+  color: orange;
+  background-color: black;
+}
+
+.item-arrow-up:hover.non-current-arrow-up-btn {
+  color: lightgoldenrodyellow;
+  background-color: black;
+}
+
+.controls-container{
+  padding: 5px;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.controls-container button {
+  margin-right: 5px;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  color: white
+}
+
+.controls-container button:hover{
+  color: black;
+  background-color: white;
 }
 </style>
