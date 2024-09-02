@@ -36,7 +36,7 @@ export default {
   },
   computed: {
     computedVideoUrl() {
-      return `${this.videoUrl}?enablejsapi=1`;  // Add enablejsapi parameter to use YouTube IFrame API
+      return `${this.videoUrl}?enablejsapi=1`;
     }
   },
   mounted() {
@@ -44,14 +44,12 @@ export default {
   },
   methods: {
     loadYouTubeAPI() {
-      // ensure the YouTube IFrame API is only loaded once
       if (!window.YT) {
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        // set up a callback to initialize the player when the API is ready
         window.onYouTubeIframeAPIReady = this.initializeYouTubePlayer;
       } else if (window.YT && window.YT.Player) {
         this.initializeYouTubePlayer();

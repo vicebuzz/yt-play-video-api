@@ -14,7 +14,8 @@
           @repeat-switch="handleRepeatSwitch"
           @play-next="playNextVideo"
           @play-last="playLastVideo"
-      />
+      >
+      </QueueComponent>
     </div>
   </div>
 </template>
@@ -29,7 +30,7 @@ export default {
   components: {
     PlayerComponent,
     VideoInput,
-    QueueComponent,
+    QueueComponent
   },
   data() {
     return {
@@ -52,16 +53,12 @@ export default {
   methods: {
     handleVideoAdded(videoTitle, videoUrl, videoLength) {
       console.log("Video title added:", videoTitle);
-      let video = this.videos.filter((video) => video.url === videoUrl)
-      if (video.length === 0){
-        this.videos.push({ title: videoTitle, length: videoLength, url:videoUrl, isCurrent: false });
-        if (this.videos.length === 1){
-          this.videos[0].isCurrent = true;
-        }
+      this.videos.push({ title: videoTitle, length: videoLength, url:videoUrl, isCurrent: false });
+      if (this.videos.length === 1){
+        this.videos[0].isCurrent = true;
       }
     },
     handleVideoChange(videoIndex){
-      //console.log("Video changed:", videoUrl);
       const videoCurrent = this.videos.filter((video) => video.isCurrent === true)[0];
       if (videoCurrent){
         videoCurrent.isCurrent = false;
@@ -70,7 +67,6 @@ export default {
       video.isCurrent = true;
     },
     handleVideoDeleted(videoIndex){
-      //console.log("Video deleted:", videoUrl);
       const videoChosen = this.videos[videoIndex];
       if (videoChosen.isCurrent){
         if (this.videos.length > 1){
@@ -166,4 +162,9 @@ body{
   margin: 0;
   padding: 0;
 }
+
+#recorderComponent{
+
+}
+
 </style>

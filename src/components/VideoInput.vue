@@ -2,15 +2,20 @@
   <div class="input-container">
     <input type="text" v-model="videoUrl" placeholder="Enter URL">
     <button class="input-btn" @click="fetchVideoURL">+</button>
+    <button @click="recordAudio" :class="isRecording ? 'recording-on' : 'input-btn'">
+      <font-awesome-icon :icon="['fa', 'microphone']" />
+    </button>
   </div>
 </template>
 
 <script>
+
 export default {
   data() {
     return {
       videoUrl: '',
-      videoId: ''
+      videoId: '',
+      isRecording: false,
     };
   },
   methods: {
@@ -32,18 +37,13 @@ export default {
       return match ? match[1] : null;
     },
     async fetchVideoTitle(videoUrl){
-      let title = ''
-      fetch(`https://noembed.com/embed?url=${encodeURIComponent(videoUrl)}`)
-          .then(response => response.json())
-          .then(data => {
-            console.log(data)
-            title = data["title"];
-          })
-          .catch(error => {
-            console.error('Error fetching video title:', error);
-          });
-      const videoDuration = await this.fetchVideoDuration(this.videoUrl);
-      this.$emit('add-to-queue', title, `https://www.youtube.com/embed/` + this.extractVideoId(videoUrl), videoDuration);
+      const response = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(videoUrl)}`);
+      const data = await response.json();
+
+      const videoTitle = data.title;
+      const videoDuration = await this.fetchVideoDuration(videoUrl);
+
+      this.$emit('add-to-queue', videoTitle, `https://www.youtube.com/embed/${this.extractVideoId(videoUrl)}`, videoDuration);
     },
     async fetchVideoDuration(url) {
       const videoId = this.extractVideoId(url);
@@ -65,6 +65,10 @@ export default {
       const minutes = (parseInt(match[2], 10) || 0);
       const seconds = (parseInt(match[3], 10) || 0);
       return `${hours ? hours + ':' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    },
+    async recordAudio() {
+      this.isRecording = !this.isRecording
+      console.log(this.isRecording)
     }
   }
 };
@@ -88,7 +92,7 @@ export default {
   color: black;
 }
 
-.input-container button {
+.input-btn {
   padding: 0.5rem;
   font-size: 1.5rem;
   border: none;
@@ -98,8 +102,23 @@ export default {
   transition: all 0.3s ease;
 }
 
-.input-container button:hover {
+.input-btn:hover {
   background: transparent;
   color: #ffffff;
+}
+
+.recording-on {
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  border: none;
+  background: white;
+  color: red;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.recording-on:hover {
+  background: red;
+  color: white;
 }
 </style>
